@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor portal | Life of the Giving Foundation</title>
+    <link rel="stylesheet" href="web/style.css">
+        <script type="module" src="web/site.js"></script>
+</head>
+<body>
+    <header>
+        <h2>Life of the Giving Foundation</h2>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About us</a>
+            <a href="impact.html">Impact &amp; projects</a>
+            <a href="donor.html">Donor portal</a>
+            <a href="contact.html">Contact &amp; support</a>
+            <a href="staff.html">Staff login</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Give with confidence.</h1>
+            <p>Your support helps us deliver food, emergency assistance, and mentoring to people who need it most.</p>
+            <a class="btn btn-gold" href="#donation-pledge">Make a donation pledge</a>
+        </section>
+
+        <section class="content-card donation-card" id="donation-pledge" aria-labelledby="donation-pledge-heading">
+            <h2 id="donation-pledge-heading">Make a donation pledge</h2>
+            <p>Share your pledge and the foundation will contact you to confirm a verified way to give. This form records your pledge; it does not process a payment.</p>
+            <form id="donation-form" class="donation-form">
+                <label for="donor-name">Full name</label>
+                <input id="donor-name" name="fullName" type="text" maxlength="120" autocomplete="name" required>
+
+                <label for="donor-email">Email address</label>
+                <input id="donor-email" name="email" type="email" maxlength="254" autocomplete="email" required>
+
+                <label for="donation-amount">Donation amount (ZAR)</label>
+                <input id="donation-amount" name="amount" type="number" min="1" max="10000000" step="0.01" inputmode="decimal" placeholder="e.g. 250.00" required>
+
+                <label for="donation-frequency">Giving frequency</label>
+                <select id="donation-frequency" name="frequency" required>
+                    <option value="one-time">One-time</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+
+                <label class="donation-consent">
+                    <input name="contactConsent" type="checkbox" required>
+                    The foundation may contact me about this pledge and verified payment options.
+                </label>
+
+                <p class="donation-privacy">Your name, email, pledge amount, giving frequency, and contact consent are stored in the foundation's Firestore donation records so the team can follow up. Do not enter payment-card or bank details.</p>
+                <p id="donation-feedback" class="donation-feedback" aria-live="polite" aria-atomic="true"></p>
+                <button class="btn btn-green" type="submit">Submit donation pledge</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Ways to give</h2>
+            <div class="news-grid">
+                <article>
+                    <h3>One-time gift</h3>
+                    <p>Make a direct contribution to support urgent community needs across Gauteng.</p>
+                </article>
+                <article>
+                    <h3>Monthly giving</h3>
+                    <p>Provide reliable support for food distribution, counselling, and youth programmes.</p>
+                </article>
+                <article>
+                    <h3>In-kind support</h3>
+                    <p>Donate goods, school supplies, blankets, or essential household items for local distribution.</p>
+                </article>
+            </div>
+        </section>
+
+        <section>
+            <h2>How donations are used</h2>
+            <ul>
+                <li>Food baskets and emergency food relief for households in crisis.</li>
+                <li>Transport, supplies, and mobile support for outreach teams.</li>
+                <li>Youth and counselling services that help families regain stability.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Life of the Giving Foundation</p>
+    </footer>
+</body>
+</html>

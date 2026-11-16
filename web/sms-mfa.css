@@ -1,0 +1,99 @@
+.sms-mfa-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    box-shadow: 0 0 0 100vmax rgba(15, 30, 20, 0.58);
+    width: min(440px, calc(100% - 2rem));
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0.75rem;
+    background: transparent;
+    color: #25352a;
+}
+
+.sms-mfa-dialog::backdrop {
+    background: rgba(15, 30, 20, 0.58);
+}
+
+.sms-mfa-panel {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.5rem;
+    border: 1px solid #e8ede8;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 18px 60px rgba(14, 38, 22, 0.2);
+}
+
+.sms-mfa-panel h2,
+.sms-mfa-panel p {
+    margin: 0;
+}
+
+.sms-mfa-panel h2 {
+    font-size: 1.3rem;
+    line-height: 1.25;
+}
+
+.sms-mfa-intro,
+.sms-mfa-masked {
+    color: #657369;
+    font-size: 0.9rem;
+}
+
+.sms-mfa-phone-step,
+.sms-mfa-code-step {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.sms-mfa-phone-step[hidden],
+.sms-mfa-code-step[hidden],
+.sms-mfa-phone-label[hidden],
+.sms-mfa-masked[hidden] {
+    display: none;
+}
+
+.sms-mfa-panel label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.87rem;
+    font-weight: 700;
+}
+
+.sms-mfa-panel input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid #cfd8d0;
+    border-radius: 0.4rem;
+    color: inherit;
+    font: inherit;
+}
+
+.sms-mfa-panel input:focus-visible,
+.sms-mfa-panel button:focus-visible {
+    outline: 3px solid #d5aa40;
+    outline-offset: 2px;
+}
+
+.sms-mfa-panel button {
+    width: 100%;
+}
+
+.sms-mfa-feedback {
+    min-height: 1.35rem;
+    color: #526457;
+    font-size: 0.84rem;
+}
+
+.sms-mfa-feedback.is-error {
+    color: #a92e2e;
+}
+
+.sms-mfa-recaptcha {
+    min-height: 0;
+}

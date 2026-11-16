@@ -1,0 +1,164 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.get('role', '') == 'admin';
+    }
+
+    function hasApprovedRole() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == 'field_worker';
+    }
+
+    function isStaff() {
+      return request.auth != null
+        && (request.auth.token.get('staff', false) == true
+          || request.auth.token.get('role', '') == 'field_worker'
+          || request.auth.token.get('role', '') == 'admin'
+          || hasApprovedRole());
+    }
+
+    function hasValidAuditFields() {
+      return request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+    }
+
+    match /beneficiaries/{recordId} {
+      allow read: if isStaff();
+      allow create: if isStaff()
+        && hasValidAuditFields()
+        && request.resource.data.keys().hasOnly([
+          'firstName', 'lastName', 'householdSize', 'location', 'phone',
+          'notes', 'needs', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasAll([
+          'firstName', 'lastName', 'householdSize', 'location', 'phone',
+          'notes', 'needs', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.firstName is string
+        && request.resource.data.lastName is string
+        && request.resource.data.householdSize is string
+        && request.resource.data.location is string
+        && request.resource.data.phone is string
+        && request.resource.data.notes is string
+        && request.resource.data.needs is list;
+      allow update, delete: if false;
+    }
+
+    match /assessments/{recordId} {
+      allow read: if isStaff();
+      allow create: if isStaff()
+        && hasValidAuditFields()
+        && request.resource.data.keys().hasOnly([
+          'beneficiaryId', 'outcome', 'priority', 'needs', 'notes', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasAll([
+          'beneficiaryId', 'outcome', 'priority', 'needs', 'notes', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.beneficiaryId is string
+        && exists(/databases/$(database)/documents/beneficiaries/$(request.resource.data.beneficiaryId))
+        && request.resource.data.outcome in [
+          'Needs identified', 'Follow-up needed', 'Referred to partner', 'No immediate action'
+        ]
+        && request.resource.data.priority in ['Low', 'Moderate', 'High', 'Urgent']
+        && request.resource.data.needs is list
+        && request.resource.data.notes is string;
+      allow update, delete: if false;
+    }
+
+    match /alerts/{recordId} {
+      allow read: if isStaff();
+      allow create: if isStaff()
+        && hasValidAuditFields()
+        && request.resource.data.keys().hasOnly([
+          'type', 'severity', 'location', 'description', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasAll([
+          'type', 'severity', 'location', 'description', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.type is string
+        && request.resource.data.severity is string
+        && request.resource.data.location is string
+        && request.resource.data.description is string;
+      allow update, delete: if false;
+    }
+
+    match /distributions/{recordId} {
+      allow read: if isStaff();
+      allow create: if isStaff()
+        && hasValidAuditFields()
+        && request.resource.data.keys().hasOnly([
+          'beneficiaryId', 'item', 'quantity', 'date', 'notes', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.keys().hasAll([
+          'beneficiaryId', 'item', 'quantity', 'date', 'notes', 'createdAt', 'createdBy'
+        ])
+        && request.resource.data.beneficiaryId is string
+        && request.resource.data.item is string
+        && request.resource.data.quantity is int
+        && request.resource.data.quantity > 0
+        && request.resource.data.date is string
+        && request.resource.data.notes is string;
+      allow update, delete: if false;
+    }
+
+    match /donations/{recordId} {
+      allow read: if isStaff();
+      allow create: if request.resource.data.keys().hasOnly([
+          'fullName', 'email', 'amountCents', 'currency', 'frequency',
+          'contactConsent', 'status', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'fullName', 'email', 'amountCents', 'currency', 'frequency',
+          'contactConsent', 'status', 'createdAt'
+        ])
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() > 0
+        && request.resource.data.fullName.size() <= 120
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.email.matches('^[^@ ]+@[^@ ]+\\.[^@ ]+$')
+        && request.resource.data.amountCents is int
+        && request.resource.data.amountCents >= 100
+        && request.resource.data.amountCents <= 1000000000
+        && request.resource.data.currency == 'ZAR'
+        && request.resource.data.frequency in ['one-time', 'monthly']
+        && request.resource.data.contactConsent == true
+        && request.resource.data.status == 'pledge_received'
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    match /accessRequests/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'status', 'createdAt'])
+        && request.resource.data.keys().hasAll(['uid', 'email', 'status', 'createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'decidedAt', 'decidedBy'])
+        && request.resource.data.status in ['approved', 'rejected']
+        && request.resource.data.decidedBy == request.auth.uid
+        && request.resource.data.decidedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /roles/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['email', 'role', 'approvedBy', 'approvedAt'])
+        && request.resource.data.keys().hasAll(['email', 'role', 'approvedBy', 'approvedAt'])
+        && request.resource.data.role == 'field_worker'
+        && request.resource.data.approvedBy == request.auth.uid
+        && request.resource.data.approvedAt == request.time;
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff login | Life of the Giving Foundation</title>
+    <link rel="stylesheet" href="web/style.css">
+    <link rel="stylesheet" href="web/sms-mfa.css">
+    <script type="module" src="web/site.js"></script>
+</head>
+<body>
+    <header>
+        <h2>Life of the Giving Foundation</h2>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About us</a>
+            <a href="impact.html">Impact &amp; projects</a>
+            <a href="donor.html">Donor portal</a>
+            <a href="contact.html">Contact &amp; support</a>
+            <a href="staff.html">Staff login</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Staff access</h1>
+            <p>Sign in to the field operations workspace to manage beneficiary intake, emergency alerts, and relief distribution.</p>
+        </section>
+
+        <section>
+            <h2>Login</h2>
+            <form id="staff-login-form">
+                <p><label>Email<br><input type="email" name="staff-email" autocomplete="username" placeholder="name@logf.org.za" required></label></p>
+                <p><label>Password<br><input type="password" name="password" autocomplete="current-password" placeholder="Enter password" required></label></p>
+                <p><button class="btn" id="staff-password-reset" type="button">Forgot password?</button></p>
+                <p id="staff-login-feedback" aria-live="polite"></p>
+                <button class="btn btn-gold" type="submit">Sign in</button>
+                <button class="btn" id="staff-google-sign-in" type="button">Continue with Google</button>
+            </form>
+        </section>
+
+        <section>
+            <h2>Staff support</h2>
+            <p>Need help with access? Contact the operations team via the <a href="contact.html">Contact &amp; support</a> page.</p>
+            <p>Administrator? <a href="admin.html">Use the administrator sign-in</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Life of the Giving Foundation</p>
+    </footer>
+</body>
+</html>

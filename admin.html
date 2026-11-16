@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator sign in | Life of the Giving Foundation</title>
+    <link rel="stylesheet" href="web/style.css">
+    <link rel="stylesheet" href="web/sms-mfa.css">
+    <script type="module" src="web/site.js"></script>
+</head>
+<body>
+    <header>
+        <h2>Life of the Giving Foundation</h2>
+        <nav>
+            <a href="community.html">Home</a>
+            <a href="staff.html">Field worker sign in</a>
+            <a href="contact.html">Contact &amp; support</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Administrator access</h1>
+            <p>Sign in with an administrator account provisioned by the foundation.</p>
+        </section>
+
+        <section>
+            <h2>Administrator sign in</h2>
+            <form id="admin-login-form">
+                <p><label>Email<br><input type="email" name="admin-email" autocomplete="username" placeholder="admin@logf.org.za" required></label></p>
+                <p><label>Password<br><input type="password" name="password" autocomplete="current-password" placeholder="Enter password" required></label></p>
+                <p><button class="btn" id="admin-password-reset" type="button">Forgot password?</button></p>
+                <p id="admin-login-feedback" aria-live="polite"></p>
+                <button class="btn btn-gold" type="submit">Sign in</button>
+                <button class="btn" id="admin-google-sign-in" type="button">Continue with Google</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>Administrator access is limited to authorized accounts.</p>
+    </footer>
+</body>
+</html>

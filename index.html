@@ -3,45 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Life of the Giving Foundation</title>
+    <meta name="theme-color" content="#13562c">
+    <meta name="description" content="Life of the Giving Foundation field operations dashboard for beneficiary intake, emergency alerts, and relief distribution.">
+    <title>Field Operations | Life of the Giving Foundation</title>
+    <link rel="icon" type="image/svg+xml" href="web/logo.svg">
+    <link rel="stylesheet" href="web/style.css">
+    <link rel="stylesheet" href="web/operations.css">
+    <link rel="stylesheet" href="web/sms-mfa.css">
+    <script type="module" src="web/operations.js"></script>
 </head>
-<body>
-    <header>
-        <h2>Life of the Giving Foundation</h2>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="about.html">About us</a>
-            <a href="impact.html">Impact &amp; projects</a>
-            <a href="donor.html">Donor portal</a>
-            <a href="contact.html">Contact &amp; support</a>
-            <a href="staff.html">Staff login</a>
-        </nav>
-    </header>
-
-    <main>
-        <section>
-            <h1>Every person deserves a hand to hold.</h1>
-            <p>We provide food relief, youth care, emergency response and counselling across Gauteng.</p>
-            <a href="donor.html">Donate</a>
-            <a href="contact.html">Volunteer</a>
-            <a href="contact.html">Get assistance</a>
+<body class="ops-body">
+    <div class="ops-app">
+        <section id="sign-in-screen" class="sign-in-screen" aria-labelledby="sign-in-heading">
+            <div class="sign-in-panel">
+                <a class="sign-in-brand" href="index.html">
+                    <img src="web/logo.svg" alt="">
+                    <span><strong>Life of the Giving Foundation</strong><small>Field Operations</small></span>
+                </a>
+                <div class="sign-in-content">
+                    <p class="ops-eyebrow">Community care, wherever it’s needed</p>
+                    <h1 id="sign-in-heading">Welcome back</h1>
+                    <p class="sign-in-copy">Sign in to your field operations workspace.</p>
+                    <div class="demo-notice" role="note">
+                        <strong>Authorized staff only</strong>
+                        <span>Sign in with an account provisioned by the foundation. Operational records sync to Firestore.</span>
+                    </div>
+                    <form id="sign-in-form">
+                        <label for="sign-in-email">Email</label>
+                        <input id="sign-in-email" name="email" type="email" autocomplete="email" placeholder="name@example.org">
+                        <div class="password-label-row"><label for="sign-in-password">Password</label><button id="sign-in-password-reset" class="login-inline-link" type="button">Forgot password?</button></div>
+                        <input id="sign-in-password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password">
+                        <p id="sign-in-feedback" class="ops-feedback" aria-live="polite"></p>
+                        <button class="ops-button ops-button-primary sign-in-submit" type="submit">Sign in</button>
+                        <button id="sign-in-google" class="ops-button ops-button-quiet" type="button">Continue with Google</button>
+                    </form>
+                    <p id="registration-prompt" class="sign-in-footnote">New field worker? <button id="show-registration" class="login-inline-link" type="button">Request access</button></p>
+                    <form id="registration-form" hidden>
+                        <label for="registration-email">Email</label>
+                        <input id="registration-email" name="email" type="email" autocomplete="email" placeholder="name@example.org" required>
+                        <label for="registration-password">Create password</label>
+                        <input id="registration-password" name="password" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" required>
+                        <label for="registration-password-confirm">Confirm password</label>
+                        <input id="registration-password-confirm" name="confirmPassword" type="password" autocomplete="new-password" minlength="6" placeholder="Re-enter password" required>
+                        <p id="registration-feedback" class="ops-feedback" aria-live="polite"></p>
+                        <button class="ops-button ops-button-primary sign-in-submit" type="submit">Request field-worker access</button>
+                        <button id="cancel-registration" class="ops-button ops-button-quiet" type="button">Back to sign in</button>
+                        <p class="sign-in-footnote">Creating an account does not grant access. A foundation administrator must approve your request.</p>
+                    </form>
+                    <a class="sign-in-donate-link" href="donor.html">
+                        <span class="sign-in-donate-icon" aria-hidden="true">♥</span>
+                        <span><strong>Want to support the community?</strong><small>Explore donation options</small></span>
+                        <span class="sign-in-donate-arrow" aria-hidden="true">→</span>
+                    </a>
+                    <p class="sign-in-footnote">Need access? <button class="login-inline-link" type="button" data-login-help="Ask the foundation administrator to provision your staff account.">Contact your administrator</button> · <a href="admin.html">Administrator sign in</a></p>
+                </div>
+                <p class="sign-in-footer">Care in action <span aria-hidden="true">·</span> Life of the Giving Foundation</p>
+            </div>
+            <aside class="sign-in-art" aria-hidden="true">
+                <img src="web/logo.svg" alt="">
+                <p>Every person deserves a hand to hold.</p>
+                <span>Relief · Care · Community</span>
+            </aside>
         </section>
 
-        <section>
-            <h2>Latest news</h2>
-            <article>
-                <h3>Winter blanket drive reaches 600 families</h3>
-                <p>Volunteers delivered blankets to three communities over three weekends.</p>
-            </article>
-            <article>
-                <h3>New field app pilot begins</h3>
-                <p>Field workers now capture beneficiary details on their phones.</p>
-            </article>
-        </section>
-    </main>
+        <section id="operations-workspace" class="ops-workspace" hidden>
+            <header class="ops-topbar">
+                <a class="ops-brand" href="#home" data-go="home">
+                    <img src="web/logo.svg" alt="">
+                    <span><strong>Life of the Giving Foundation</strong><small>FIELD OPERATIONS</small></span>
+                </a>
+                <div class="ops-topbar-right">
+                    <span id="firestore-status" class="connection-status" aria-live="polite"><span aria-hidden="true"></span> Connecting to Firestore</span>
+                    <button class="profile-button" type="button" aria-label="Sign out of demo" data-sign-out>TS</button>
+                </div>
+            </header>
 
-    <footer>
-        <p>&copy; 2026 Life of the Giving Foundation</p>
-    </footer>
+            <div class="ops-layout">
+                <aside class="ops-sidebar" aria-label="Operations navigation">
+                    <p class="sidebar-caption">WORKSPACE</p>
+                    <nav class="ops-navigation">
+                        <button class="ops-nav-link is-active" type="button" data-nav="home"><span class="nav-icon" aria-hidden="true">⌂</span> Home</button>
+                        <button class="ops-nav-link" type="button" data-nav="beneficiaries"><span class="nav-icon" aria-hidden="true">◎</span> Beneficiaries</button>
+                        <button class="ops-nav-link" type="button" data-nav="assessments"><span class="nav-icon" aria-hidden="true">▤</span> Assessments</button>
+                        <button class="ops-nav-link" type="button" data-nav="alerts"><span class="nav-icon nav-icon-alert" aria-hidden="true">!</span> Emergency Alerts <span id="nav-alert-count" class="nav-count" hidden>0</span></button>
+                        <button class="ops-nav-link" type="button" data-nav="relief"><span class="nav-icon" aria-hidden="true">▤</span> Relief log</button>
+                        <button class="ops-nav-link" type="button" data-nav="donations"><span class="nav-icon nav-icon-donate" aria-hidden="true">♥</span> Donate</button>
+                        <button class="ops-nav-link" type="button" data-nav="support"><span class="nav-icon" aria-hidden="true">?</span> Support</button>
+                        <button class="ops-nav-link" type="button" data-nav="requests" data-admin-only hidden><span class="nav-icon" aria-hidden="true">✓</span> Access requests <span id="nav-request-count" class="nav-count" hidden>0</span></button>
+                    </nav>
+                    <div class="sidebar-bottom">
+                        <div class="sidebar-help-mark" aria-hidden="true">♥</div>
+                        <strong>Here to help</strong>
+                        <p>Keep your community connected to the care it needs.</p>
+                        <a href="contact.html">Contact the foundation <span aria-hidden="true">↗</span></a>
+                    </div>
+                </aside>
+
+                <main id="ops-main" class="ops-main">
+                    <div class="demo-banner"><span aria-hidden="true">ⓘ</span><p><strong>Authorized staff workspace</strong> — operational records sync to Firestore when connected. Alerts are logged here but are not sent to responders.</p></div>
+
+                    <section class="ops-view is-visible" data-view="home" aria-labelledby="home-heading">
+                        <div class="view-heading">
+                            <div>
+                                <p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> HOME</p>
+                                <p id="current-date" class="ops-eyebrow"></p>
+                                <h1 id="home-heading">Good morning <span aria-hidden="true">☀</span></h1>
+                                <p class="view-subtitle">Here’s what’s happening across your community today.</p>
+                            </div>
+                            <span class="signed-in-as"><span class="online-dot"></span> Field team</span>
+                        </div>
+
+                        <div class="overview-grid" aria-label="Operations summary">
+                            <article class="overview-card">
+                                <span class="overview-icon icon-green" aria-hidden="true">◎</span>
+                                <span class="overview-label">Beneficiaries</span>
+                                <strong id="stat-beneficiaries" class="overview-value">0</strong>
+                                <span class="overview-detail">People supported</span>
+                            </article>
+                            <article class="overview-card">
+                                <span class="overview-icon icon-red" aria-hidden="true">!</span>
+                                <span class="overview-label">Open alerts</span>
+                                <strong id="stat-alerts" class="overview-value">0</strong>
+                                <span class="overview-detail">Needs attention</span>
+                            </article>
+                            <article class="overview-card">
+                                <span class="overview-icon icon-gold" aria-hidden="true">▤</span>
+                                <span class="overview-label">Relief logged</span>
+                                <strong id="stat-distributions" class="overview-value">0</strong>
+                                <span class="overview-detail">Entries logged</span>
+                            </article>
+                        </div>
+
+                        <div class="section-heading-row">
+                            <div><p class="ops-eyebrow">GET STARTED</p><h2>Quick actions</h2></div>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="quick-action" type="button" data-go="beneficiaries">
+                                <span class="quick-action-icon icon-green" aria-hidden="true">＋</span>
+                                <span><strong>Beneficiary Intake</strong><small>Register a household for support</small></span>
+                                <span class="action-arrow" aria-hidden="true">→</span>
+                            </button>
+                            <button class="quick-action" type="button" data-go="alerts">
+                                <span class="quick-action-icon icon-red" aria-hidden="true">!</span>
+                                <span><strong>Emergency Alert</strong><small>Report an urgent community need</small></span>
+                                <span class="action-arrow" aria-hidden="true">→</span>
+                            </button>
+                            <button class="quick-action" type="button" data-go="relief">
+                                <span class="quick-action-icon icon-gold" aria-hidden="true">▤</span>
+                                <span><strong>Relief Distribution</strong><small>Record items given to a beneficiary</small></span>
+                                <span class="action-arrow" aria-hidden="true">→</span>
+                            </button>
+                        </div>
+
+                        <div class="home-bottom-grid">
+                            <section class="ops-panel activity-panel" aria-labelledby="activity-heading">
+                                <div class="panel-heading"><div><p class="ops-eyebrow">LATEST UPDATES</p><h2 id="activity-heading">Recent activity</h2></div><button class="text-button" type="button" data-go="relief">View relief log</button></div>
+                                <div id="recent-activity" class="empty-state"><span class="empty-icon" aria-hidden="true">◷</span><strong>You’re all caught up</strong><p>Updates from this demo device will appear here.</p></div>
+                            </section>
+                            <section class="ops-panel emergency-panel" aria-labelledby="emergency-card-heading">
+                                <span class="emergency-card-icon" aria-hidden="true">!</span>
+                                <p class="ops-eyebrow">NEED URGENT SUPPORT?</p>
+                                <h2 id="emergency-card-heading">Raise an emergency alert</h2>
+                                <p>Let the team know about an urgent situation in your community.</p>
+                                <button class="ops-button ops-button-danger" type="button" data-go="alerts">Create an alert <span aria-hidden="true">→</span></button>
+                            </section>
+                        </div>
+                        <section class="donation-prompt" aria-labelledby="donation-prompt-heading">
+                            <span class="donation-mark" aria-hidden="true">♥</span>
+                            <div>
+                                <p class="ops-eyebrow">KEEP CARE MOVING</p>
+                                <h2 id="donation-prompt-heading">Support the work in your community</h2>
+                                <p>Give financially, donate useful essentials, or volunteer your time.</p>
+                            </div>
+                            <button class="ops-button ops-button-gold" type="button" data-go="donations">Explore ways to give <span aria-hidden="true">→</span></button>
+                        </section>
+                    </section>
+
+                    <section class="ops-view" data-view="beneficiaries" aria-labelledby="beneficiaries-heading" hidden>
+                        <div class="view-heading">
+                            <div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> BENEFICIARIES</p><p class="ops-eyebrow">COMMUNITY CARE</p><h1 id="beneficiaries-heading">Beneficiary Intake</h1><p class="view-subtitle">Capture household needs and connect people with practical support.</p></div>
+                        </div>
+                        <div class="form-notice"><strong>Operational records</strong><span>Records are stored in Firestore. Enter only information needed for authorized foundation operations.</span></div>
+                        <form id="beneficiary-form" class="ops-panel ops-form">
+                            <div class="form-section-title"><span class="form-step">01</span><div><h2>Household and location</h2><p>Tell us who needs support and where they are based.</p></div></div>
+                            <div class="ops-form-grid">
+                                <label>First name<input name="firstName" autocomplete="off" required placeholder="e.g. Thandi"></label>
+                                <label>Last name<input name="lastName" autocomplete="off" required placeholder="e.g. Mokoena"></label>
+                                <label>Household size<input name="householdSize" type="number" min="1" max="50" required placeholder="Number of people"></label>
+                                <label>Community or area<input name="location" autocomplete="off" required placeholder="Suburb or community"></label>
+                                <label class="form-wide">Phone number <span class="optional-label">Optional</span><input name="phone" type="tel" autocomplete="off" placeholder="Demo number only"></label>
+                            </div>
+                            <div class="form-section-title form-section-spaced"><span class="form-step">02</span><div><h2>Immediate needs at intake</h2><p>Capture the immediate needs raised during initial registration.</p></div></div>
+                            <fieldset class="need-options"><legend class="sr-only">Immediate needs</legend>
+                                <label><input type="checkbox" name="needs" value="Food Assistance"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Food Assistance</strong><small>Food parcel or food shortage</small></span></label>
+                                <label><input type="checkbox" name="needs" value="Medical Care"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Medical Care</strong><small>Medical emergency or care</small></span></label>
+                                <label><input type="checkbox" name="needs" value="Psychosocial Support"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Psychosocial Support</strong><small>Emotional and social support</small></span></label>
+                            </fieldset>
+                            <label class="notes-label">Additional notes <span class="optional-label">Optional</span><textarea name="notes" rows="3" placeholder="Notes for this demo record"></textarea></label>
+                            <p id="beneficiary-feedback" class="ops-feedback" aria-live="polite"></p>
+                            <div class="form-actions"><button class="ops-button ops-button-quiet" type="reset">Clear form</button><button class="ops-button ops-button-primary" type="submit">Save beneficiary <span aria-hidden="true">→</span></button></div>
+                        </form>
+                        <section class="ops-panel records-panel"><div class="panel-heading"><div><p class="ops-eyebrow">RECENT INTAKE</p><h2>Recent beneficiaries</h2></div><span id="beneficiary-record-count" class="record-count">0 records</span></div><div id="beneficiary-records" class="records-list"></div></section>
+                    </section>
+
+                    <section class="ops-view" data-view="assessments" aria-labelledby="assessments-heading" hidden>
+                        <div class="view-heading">
+                            <div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> ASSESSMENTS</p><p class="ops-eyebrow">BENEFICIARY FOLLOW-UP</p><h1 id="assessments-heading">Needs Assessment</h1><p class="view-subtitle">Record findings and follow-up for an existing beneficiary.</p></div>
+                        </div>
+                        <div id="assessment-beneficiary-notice" class="form-notice form-notice-warning" hidden><strong>Add a beneficiary first</strong><span>Save a beneficiary intake before recording an assessment.</span></div>
+                        <form id="assessment-form" class="ops-panel ops-form">
+                            <div class="form-section-title"><span class="form-step">01</span><div><h2>Assessment findings</h2><p>Record the discussion and next step. This form does not determine eligibility.</p></div></div>
+                            <div class="ops-form-grid">
+                                <label class="form-wide">Beneficiary<select name="beneficiaryId" required><option value="">Select a beneficiary</option></select></label>
+                                <label>Assessment outcome<select name="outcome" required><option value="">Choose an outcome</option><option>Needs identified</option><option>Follow-up needed</option><option>Referred to partner</option><option>No immediate action</option></select></label>
+                                <label>Priority<select name="priority" required><option value="">Choose priority</option><option>Low</option><option>Moderate</option><option>High</option><option>Urgent</option></select></label>
+                            </div>
+                            <fieldset class="need-options"><legend>Needs identified</legend>
+                                <label><input type="checkbox" name="needs" value="Food assistance"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Food assistance</strong></span></label>
+                                <label><input type="checkbox" name="needs" value="Shelter"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Shelter</strong></span></label>
+                                <label><input type="checkbox" name="needs" value="Medical care"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Medical care</strong></span></label>
+                                <label><input type="checkbox" name="needs" value="Psychosocial support"><span class="need-checkbox" aria-hidden="true"></span><span><strong>Psychosocial support</strong></span></label>
+                            </fieldset>
+                            <label class="notes-label">Findings and follow-up notes <span class="optional-label">Optional</span><textarea name="notes" rows="3" maxlength="2000" placeholder="Record relevant findings and agreed next steps"></textarea></label>
+                            <p id="assessment-feedback" class="ops-feedback" aria-live="polite"></p>
+                            <div class="form-actions"><button class="ops-button ops-button-quiet" type="reset">Clear form</button><button class="ops-button ops-button-primary" type="submit">Save assessment <span aria-hidden="true">→</span></button></div>
+                        </form>
+                        <section class="ops-panel records-panel"><div class="panel-heading"><div><p class="ops-eyebrow">RECENT REVIEWS</p><h2>Assessment history</h2></div><span id="assessment-record-count" class="record-count">0 records</span></div><div id="assessment-records" class="records-list"></div></section>
+                    </section>
+
+                    <section class="ops-view" data-view="alerts" aria-labelledby="alerts-heading" hidden>
+                        <div class="view-heading">
+                            <div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> EMERGENCY ALERTS</p><p class="ops-eyebrow">RESPONSE COORDINATION</p><h1 id="alerts-heading">Emergency Alerts</h1><p class="view-subtitle">Report urgent situations so the right people can respond.</p></div>
+                        </div>
+                        <div class="emergency-notice"><span aria-hidden="true">!</span><p><strong>In immediate danger?</strong> This demo is not monitored and is not an emergency service. Contact local emergency services for urgent help.</p></div>
+                        <form id="alert-form" class="ops-panel ops-form alert-form">
+                            <div class="form-section-title"><span class="form-step form-step-red">!</span><div><h2>Raise an emergency alert</h2><p>Include a clear location and description of what is happening.</p></div></div>
+                            <div class="ops-form-grid">
+                                <label>Alert type<select name="type" required><option value="">Choose an alert type</option><option>Medical emergency</option><option>Food shortage</option><option>Shelter needed</option><option>Safety concern</option><option>Other urgent need</option></select></label>
+                                <label>Severity<select name="severity" required><option value="">Choose severity</option><option>Critical</option><option>High</option><option>Moderate</option></select></label>
+                                <label class="form-wide">Community or location<input name="location" autocomplete="off" required placeholder="Where is help needed?"></label>
+                                <label class="form-wide">Describe the situation<textarea name="description" rows="4" required placeholder="Share the essential details (demo information only)"></textarea></label>
+                            </div>
+                            <p id="alert-feedback" class="ops-feedback" aria-live="polite"></p>
+                            <div class="form-actions"><button class="ops-button ops-button-quiet" type="reset">Clear form</button><button class="ops-button ops-button-danger" type="submit">Send alert <span aria-hidden="true">→</span></button></div>
+                        </form>
+                        <section class="ops-panel records-panel"><div class="panel-heading"><div><p class="ops-eyebrow">LATEST ALERTS</p><h2>Recent emergency alerts</h2></div><span id="alert-record-count" class="record-count">0 records</span></div><div id="alert-records" class="records-list"></div></section>
+                    </section>
+
+                    <section class="ops-view" data-view="relief" aria-labelledby="relief-heading" hidden>
+                        <div class="view-heading">
+                            <div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> RELIEF LOG</p><p class="ops-eyebrow">RELIEF OPERATIONS</p><h1 id="relief-heading">Relief Distribution</h1><p class="view-subtitle">Keep a record of items distributed to a beneficiary.</p></div>
+                        </div>
+                        <div id="distribution-beneficiary-notice" class="form-notice form-notice-warning" hidden><strong>Add a beneficiary first</strong><span>Save a sample beneficiary intake before recording a distribution.</span></div>
+                        <form id="distribution-form" class="ops-panel ops-form">
+                            <div class="form-section-title"><span class="form-step form-step-gold">01</span><div><h2>Log a distribution</h2><p>Choose the beneficiary, the item and the quantity.</p></div></div>
+                            <div class="ops-form-grid">
+                                <label class="form-wide">Beneficiary<select name="beneficiaryId" required><option value="">Select a beneficiary</option></select></label>
+                                <label>Relief item<select name="item" required><option value="">Choose an item</option><option>Food parcel</option><option>Blanket</option><option>Hygiene kit</option><option>Medical supplies</option><option>Other relief</option></select></label>
+                                <label>Quantity<input name="quantity" type="number" min="1" max="500" required placeholder="Number of items"></label>
+                                <label class="form-wide">Date distributed<input name="date" type="date" required></label>
+                                <label class="form-wide">Notes <span class="optional-label">Optional</span><textarea name="notes" rows="3" placeholder="Demo notes"></textarea></label>
+                            </div>
+                            <p id="distribution-feedback" class="ops-feedback" aria-live="polite"></p>
+                            <div class="form-actions"><button class="ops-button ops-button-quiet" type="reset">Clear form</button><button class="ops-button ops-button-primary" type="submit">Log distribution <span aria-hidden="true">→</span></button></div>
+                        </form>
+                        <section class="ops-panel records-panel"><div class="panel-heading"><div><p class="ops-eyebrow">RECENT DISTRIBUTIONS</p><h2>Relief log</h2></div><span id="distribution-record-count" class="record-count">0 records</span></div><div id="distribution-records" class="records-list"></div></section>
+                    </section>
+
+                    <section class="ops-view" data-view="donations" aria-labelledby="donations-heading" hidden>
+                        <div class="view-heading">
+                            <div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> DONATE</p><p class="ops-eyebrow">GIVE WITH PURPOSE</p><h1 id="donations-heading">Support the community</h1><p class="view-subtitle">Your generosity helps keep practical care moving across Gauteng.</p></div>
+                        </div>
+                        <div class="donation-unavailable"><span aria-hidden="true">ⓘ</span><p><strong>Donation pledges are recorded here; payments are not processed online.</strong> Follow up with donors using verified payment options. Never send money to an unverified account.</p></div>
+                        <section class="ops-panel records-panel" aria-labelledby="donation-records-heading">
+                            <div class="panel-heading"><div><p class="ops-eyebrow">DONOR FOLLOW-UP</p><h2 id="donation-records-heading">Recent donation pledges</h2></div><span id="donation-record-count" class="record-count">0 pledges</span></div>
+                            <div id="donation-records" class="records-list"></div>
+                        </section>
+                        <section class="donation-grid" aria-label="Ways to support the foundation">
+                            <article class="donation-option">
+                                <span class="donation-option-icon donation-money" aria-hidden="true">R</span>
+                                <p class="ops-eyebrow">FINANCIAL GIVING</p>
+                                <h2>Make a contribution</h2>
+                                <p>Submit a pledge through the donor portal. The foundation will follow up with verified payment options.</p>
+                                <a class="ops-button ops-button-primary" href="donor.html">Donation information <span aria-hidden="true">→</span></a>
+                            </article>
+                            <article class="donation-option">
+                                <span class="donation-option-icon donation-supplies" aria-hidden="true">▤</span>
+                                <p class="ops-eyebrow">PRACTICAL GIVING</p>
+                                <h2>Donate essentials</h2>
+                                <p>Ask which food, blankets, or other supplies are currently needed before donating items.</p>
+                                <a class="ops-button ops-button-quiet" href="contact.html">Ask about needed items <span aria-hidden="true">→</span></a>
+                            </article>
+                            <article class="donation-option">
+                                <span class="donation-option-icon donation-time" aria-hidden="true">♥</span>
+                                <p class="ops-eyebrow">GIVE YOUR TIME</p>
+                                <h2>Volunteer with us</h2>
+                                <p>Get in touch to ask about volunteering and community projects.</p>
+                                <a class="ops-button ops-button-quiet" href="contact.html">Ask about volunteering <span aria-hidden="true">→</span></a>
+                            </article>
+                        </section>
+                        <section class="donation-thanks">
+                            <span aria-hidden="true">♥</span><p>Thank you for helping bring care and support to people who need it.</p>
+                        </section>
+                    </section>
+
+                    <section class="ops-view" data-view="requests" aria-labelledby="requests-heading" hidden>
+                        <div class="view-heading">
+                            <div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> ACCESS REQUESTS</p><p class="ops-eyebrow">ADMINISTRATOR</p><h1 id="requests-heading">Access requests</h1><p class="view-subtitle">Approve or decline people who asked to join as field workers.</p></div>
+                        </div>
+                        <div class="form-notice"><strong>Before approving</strong><span>Only approve people you know. Approved people must verify their email and then sign in on the Field worker page.</span></div>
+                        <p id="access-request-feedback" class="ops-feedback" aria-live="polite"></p>
+                        <section class="ops-panel records-panel">
+                            <div class="panel-heading"><div><p class="ops-eyebrow">PEOPLE</p><h2>Field worker requests</h2></div><span id="access-request-count" class="record-count">0 pending</span></div>
+                            <div id="access-request-records" class="records-list"></div>
+                        </section>
+                    </section>
+
+                    <section class="ops-view" data-view="support" aria-labelledby="support-heading" hidden>
+                        <div class="view-heading"><div><p class="breadcrumb">FIELD OPERATIONS <span aria-hidden="true">/</span> SUPPORT</p><p class="ops-eyebrow">WE’RE HERE TO HELP</p><h1 id="support-heading">Support</h1><p class="view-subtitle">Quick guidance for the field operations app.</p></div></div>
+                        <div class="support-notice"><span aria-hidden="true">ⓘ</span><p>This workspace is for authorized staff. Records sync to Firestore; emergency alerts are logged here but are not sent to responders.</p></div>
+                        <section class="ops-panel support-panel"><p class="ops-eyebrow">COMMON QUESTIONS</p><h2>Field operations help</h2>
+                            <details><summary>How do I sign in?</summary><p>Use an account provisioned by the foundation administrator. Access is limited to authorized staff.</p></details>
+                            <details><summary>How do I raise an emergency alert?</summary><p>Open Emergency Alerts, describe the situation, choose its severity, and provide the location. Alerts are logged in Firestore but are not sent to responders.</p></details>
+                            <details><summary>How do I record an assessment?</summary><p>Save a beneficiary first, open Assessments, select the beneficiary, record findings and a follow-up outcome, then save.</p></details>
+                            <details><summary>How do I log a relief distribution?</summary><p>Save a beneficiary first, then open Relief log. Select the beneficiary, choose the item, enter the quantity, and save the record.</p></details>
+                            <details><summary>Where are records saved?</summary><p>Beneficiary, assessment, alert, and distribution records are saved in Firestore and visible to authorized staff.</p></details>
+                            <button id="clear-demo-data" class="ops-button ops-button-quiet clear-data-button" type="button">Clear demo data from this browser</button>
+                            <p id="clear-data-feedback" class="ops-feedback" aria-live="polite"></p>
+                        </section>
+                        <section class="ops-panel support-contact"><div><p class="ops-eyebrow">NEED MORE HELP?</p><h2>Contact the foundation</h2><p>For real assistance, contact the foundation through its official channels.</p></div><a class="ops-button ops-button-primary" href="contact.html">Contact &amp; support <span aria-hidden="true">↗</span></a></section>
+                    </section>
+
+                    <footer class="ops-footer"><span>Life of the Giving Foundation · Field Operations</span><a href="about.html">About the foundation</a><a href="contact.html">Contact</a><span>Staff workspace</span></footer>
+                </main>
+            </div>
+            <nav class="mobile-navigation" aria-label="Mobile operations navigation">
+                <button class="mobile-nav-link is-active" type="button" data-nav="home"><span aria-hidden="true">⌂</span>Home</button>
+                <button class="mobile-nav-link" type="button" data-nav="beneficiaries"><span aria-hidden="true">◎</span>People</button>
+                <button class="mobile-nav-link" type="button" data-nav="alerts"><span aria-hidden="true">!</span>Alerts</button>
+                <button class="mobile-nav-link" type="button" data-nav="relief"><span aria-hidden="true">▤</span>Relief</button>
+                <button class="mobile-nav-link" type="button" data-nav="donations"><span aria-hidden="true">♥</span>Give</button>
+                <button class="mobile-nav-link" type="button" data-nav="assessments"><span aria-hidden="true">▤</span>Assess</button>
+                <button class="mobile-nav-link" type="button" data-nav="support"><span aria-hidden="true">?</span>Support</button>
+                <button class="mobile-nav-link" type="button" data-nav="requests" data-admin-only hidden><span aria-hidden="true">✓</span>Access</button>
+            </nav>
+        </section>
+    </div>
 </body>
 </html>
